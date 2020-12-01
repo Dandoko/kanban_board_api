@@ -4,6 +4,9 @@ const app = express();
 // Body-Parser middleware
 app.use(express.json());
 
+const cors = require('./middleware/cors');
+app.use(cors);
+
 app.use('/columns', require('./routes/column'));
 app.use('/columns', require('./routes/tasks'));
 
