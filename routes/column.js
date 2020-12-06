@@ -3,8 +3,6 @@
 const express = require('express');
 const router = express.Router();
 
-const { mongoose } = require('../db/mongoose');
-
 // Importing the mongoose models
 const { Column, Task } = require('../db/models/index');
 
