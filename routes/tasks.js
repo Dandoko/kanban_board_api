@@ -38,7 +38,7 @@ router.put('/:columnId/tasks/:taskId', (req, res) => {
             $set: req.body
         }
     ).then(() => {
-        res.sendStatus(200);
+        res.send({message: 'API:routes:tasks.js:router.put() - Updated Successfully'});
     });
 });
 

@@ -11,6 +11,10 @@ const TaskSchema = new mongoose.Schema({
     _columnId: {
         type: mongoose.Types.ObjectId,
         required: true
+    },
+    completed: {
+        type: Boolean,
+        default: false
     }
 });
 
