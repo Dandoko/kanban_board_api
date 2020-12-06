@@ -18,7 +18,7 @@ let verifySession = (req, res, next) => {
         req.userObject = user;
         req.refreshToken = refreshToken;
 
-        // Checking if the refresh token is valid
+        // Checking if the refresh token is valid (not expired)
         let isSessionValid = false;
         user.sessions.forEach((session) => {
             if (session.refreshToken === refreshToken) {

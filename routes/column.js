@@ -3,8 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-// Importing the mongoose models
-const { Column, Task } = require('../db/models/index');
+const { Column, Task, User } = require('../db/models/index');
 
 // Gets all columns
 router.get('/', (req, res) => {

@@ -3,8 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-// Importing the mongoose models
-const { User } = require('../db/models/index');
+const { Column, Task, User } = require('../db/models/index');
 
 // Verify session middleware
 const verifySession = require('../middleware/verify-session-middleware');
@@ -16,12 +15,9 @@ router.post('/', (req, res) => {
     console.log(body);
 
     let newUser = new User(body);
-    console.log("1 - newUser: " + newUser);
     newUser.save().then(() => {
-        console.log("2 - newUser: " + newUser);
         return newUser.createSession();
     }).then((refreshToken) => {
-        console.log("PASSING TO HERE");
         // Creating the access token for the user
         return newUser.createAccessToken().then((accessToken) => {
             // Access token created successfully and returning the access and refresh token as auth tokens
