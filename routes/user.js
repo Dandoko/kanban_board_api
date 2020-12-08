@@ -5,8 +5,7 @@ const router = express.Router();
 
 const { Column, Task, User } = require('../db/models/index');
 
-// Verify session middleware
-const verifySession = require('../middleware/verify-session-middleware');
+const authMiddleware = require('../middleware/auth-middleware');
 
 // Sign up
 router.post('/', (req, res) => {
@@ -51,12 +50,13 @@ router.post('/login', (req, res) => {
                 .send(user);
         });
     }).catch((e) => {
+        // Bad request
         res.status(400).send(e);
     });
 });
 
 // Generates and returns an access token
-router.get('/refresh-access-token', verifySession, (req, res) => {
+router.get('/refresh-access-token', authMiddleware.verifySession, (req, res) => {
     // The user is authenticated and we can use user_id and user object
     req.userObject.createAccessToken().then((accessToken) => {
         res.header('x-access-token', accessToken).send({accessToken});

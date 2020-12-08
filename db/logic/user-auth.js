@@ -85,10 +85,13 @@ module.exports = function(UserSchema) {
     UserSchema.statics.findByCredentials = function(email, password) {
         let User = this;
         return User.findOne({email}).then((user) => {
+            // If the email does not exist in the database
             if (!user) {
                 return Promise.reject();
             }
+            // If the email exists in the database
             else {
+                // Check if the password is correct
                 return new Promise((resolve, reject) => {
                     bcrypt.compare(password, user.password, (err, result) => {
                         if (result) resolve(user);

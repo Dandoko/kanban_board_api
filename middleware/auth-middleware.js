@@ -1,4 +1,24 @@
+const jwt = require('jsonwebtoken');
+
 const { User } = require('../db/models/index');
+
+// Checking if the request has a valid JWT access token
+let authenticate = (req, res, next) => {
+    let accessToken = req.header('x-access-token');
+    
+    // Verifying the JWT
+    jwt.verify(accessToken, User.getJWTSecret(), (err, decoded) => {
+        // Invalid access key
+        if (err) {
+            res.status(401).send(err);
+        }
+        // Valid
+        else {
+            req.user_id = decoded._id; // Setting the request's user_id to what is on the encoded userId
+            next();
+        }
+    });
+}
 
 // Verifies the session
 // Not using "app.use" because we don't want to apply it to all requests but to specific requests
@@ -40,6 +60,9 @@ let verifySession = (req, res, next) => {
     }).catch((e) => {
         res.status(401).send(e);
     });
-}
+};
 
-module.exports = verifySession;
+module.exports = {
+    verifySession,
+    authenticate
+};
