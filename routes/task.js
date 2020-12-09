@@ -16,15 +16,7 @@ router.get('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
 
 // Creating a new task in a specified column
 router.post('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
-
-    // Checking if the user has access to the columnId passed in the request
-    Column.findOne({
-        _id: req.params.columnId,
-        _userId: req.user_id
-    }).then((column) => {
-        if (column) return true;
-        else return false;
-    }).then((canCreateTask) => {
+    hasAccessToColumn(req).then((canCreateTask) => {
         if (canCreateTask) {
             let newTask = new Task({
                 title: req.body.title,
@@ -38,18 +30,12 @@ router.post('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
         else {
             res.sendStatus(401);
         }
-    })
+    });
 });
 
 // Updating a specified task
 router.put('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) => {
-    Column.findOne({
-        _id: req.params.columnId,
-        _userId: req.user_id
-    }).then((column) => {
-        if (column) return true;
-        else return false;
-    }).then((canUpdateTask) => {
+    hasAccessToColumn(req).then((canUpdateTask) => {
         if (canUpdateTask) {
             Task.findOneAndUpdate(
                 {_id: req.params.taskId, _columnId: req.params.columnId},
@@ -66,10 +52,7 @@ router.put('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) =
 
 // Deleting a specified task
 router.delete('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) => {
-    Column.findOne({
-        _id: req.params.columnId,
-        _userId: req.user_id
-    }).then((column) => {
+    hasAccessToColumn(req).then((column) => {
         if (column) return true;
         else return false;
     }).then((canDeleteTask) => {
@@ -85,5 +68,16 @@ router.delete('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res
         }
     });
 });
+
+// Checking if the user has access to the columnId passed in the request
+let hasAccessToColumn = (req) => {
+    return Column.findOne({
+        _id: req.params.columnId,
+        _userId: req.user_id
+    }).then((column) => {
+        if (column) return true;
+        else return false;
+    });
+}
 
 module.exports = router;

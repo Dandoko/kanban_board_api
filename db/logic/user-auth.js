@@ -28,7 +28,7 @@ module.exports = function(UserSchema) {
         const user = this;
         return new Promise((resolve, reject) => {
             // Creating JWT
-            jwt.sign({_id: user._id.toHexString()}, jwtSecret, {expiresIn: '15m'}, (err, accessToken) => {
+            jwt.sign({_id: user._id.toHexString()}, jwtSecret, {expiresIn: '10s'}, (err, accessToken) => {
                 if (!err) resolve(accessToken);
                 else reject();
             });
@@ -148,7 +148,7 @@ module.exports = function(UserSchema) {
 
     // Saving the session (refresh token + expiry time) to the database
     let saveSession = (user, refreshToken) => {
-        return new Promise((resolve, rejct) => {
+        return new Promise((resolve, reject) => {
             let expiresAt = createRefreshTokenExpiryTime();
 
             // Pushes the object into the sessions array
@@ -158,7 +158,7 @@ module.exports = function(UserSchema) {
             user.save().then(() => {
                 return resolve(refreshToken);
             }).catch((e) => {
-                rejct(e);
+                reject(e);
             });
         });
     }
