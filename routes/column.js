@@ -38,7 +38,7 @@ router.put('/:id', authMiddleware.authenticate, (req, res) => {
         {_id: req.params.id, _userId: req.user_id},
         {$set: req.body}
     ).then(() => {
-        res.sendStatus(200);
+        res.send({'message': 'api:routes:column.js - Updated Successfully'});
     });
 });
 
