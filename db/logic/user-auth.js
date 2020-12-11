@@ -28,7 +28,7 @@ module.exports = function(UserSchema) {
         const user = this;
         return new Promise((resolve, reject) => {
             // Creating JWT
-            jwt.sign({_id: user._id.toHexString()}, jwtSecret, {expiresIn: '10s'}, (err, accessToken) => {
+            jwt.sign({_id: user._id.toHexString()}, jwtSecret, {expiresIn: '15m'}, (err, accessToken) => {
                 if (!err) resolve(accessToken);
                 else reject();
             });
