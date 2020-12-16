@@ -11,7 +11,7 @@ const authMiddleware = require('../middleware/auth-middleware');
 router.get('/', authMiddleware.authenticate, (req, res) => {
     Column.find({
         _userId: req.user_id
-    }).then((columns) => {
+    }).sort({"position": 1}).then((columns) => {
         res.send(columns);
     }).catch((e) => {
         res.send(e);
@@ -22,13 +22,16 @@ router.get('/', authMiddleware.authenticate, (req, res) => {
 router.post('/', authMiddleware.authenticate, (req, res) => {
     let title = req.body.title;
 
-    let newColumn = new Column({
-        title,
-        _userId: req.user_id
-    });
-
-    newColumn.save().then((createdColumn) => {
-        res.send(createdColumn);
+    Column.countDocuments().then(numColumns => {
+        let newColumn = new Column({
+            title,
+            _userId: req.user_id,
+            position: numColumns
+        });
+    
+        newColumn.save().then((createdColumn) => {
+            res.send(createdColumn);
+        });
     });
 });
 
@@ -42,11 +45,36 @@ router.put('/:id', authMiddleware.authenticate, (req, res) => {
     });
 });
 
+// Moves a column
+router.put('/:id/moveColumn', authMiddleware.authenticate, (req, res) => {
+    Column.updateMany(
+        {_userId: req.user_id, position: { $gt: req.body.prevColumnIndex }},
+        {$inc: {position: -1}}
+    ).then(() => {
+        Column.updateMany(
+            {_userId: req.user_id, position: { $gt: req.body.newColumnIndex - 1 }},
+            {$inc: {position: +1}}
+        ).then(() => {
+            Column.findOneAndUpdate(
+                {_id: req.params.id, _userId: req.user_id},
+                {$set: {position: req.body.newColumnIndex }}
+            ).then(() => {
+                res.send({message: 'API:routes:tasks.js:router.put() - Updated Successfully'});
+            });
+        });
+    });
+});
+
 // Deletes a column
 router.delete('/:id', authMiddleware.authenticate, (req, res) => {
     Column.findOneAndRemove({_id: req.params.id, _userId: req.user_id}).then((removedColumn) => {
-        res.send(removedColumn);
         deleteAllTasksFromColumn(removedColumn._id);
+        Column.updateMany(
+            {_userId: req.user_id, position: { $gt: removedColumn.position }},
+            {$inc: {position: -1}}
+        ).then(() => {
+            res.send(removedColumn);
+        });
     });
 });
 

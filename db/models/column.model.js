@@ -10,6 +10,10 @@ const ColumnSchema = new mongoose.Schema({
     _userId: {
         type: mongoose.Types.ObjectId,
         required: true
+    },
+    position: {
+        type: Number,
+        required: true
     }
 });
 
