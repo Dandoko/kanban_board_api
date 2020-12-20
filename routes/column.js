@@ -11,16 +11,16 @@ const authMiddleware = require('../middleware/auth-middleware');
 router.get('/', authMiddleware.authenticate, (req, res) => {
     Column.find({
         _userId: req.user_id
-    }).sort({"position": 1}).then((columns) => {
+    }).sort({"position": 1}).then(columns => {
         res.send(columns);
-    }).catch((e) => {
+    }).catch(e => {
         res.send(e);
     });
 })
 
 // Creates a new column
 router.post('/', authMiddleware.authenticate, (req, res) => {
-    let title = req.body.title;
+    const title = req.body.title;
 
     Column.countDocuments().then(numColumns => {
         let newColumn = new Column({
@@ -29,13 +29,13 @@ router.post('/', authMiddleware.authenticate, (req, res) => {
             position: numColumns
         });
     
-        newColumn.save().then((createdColumn) => {
+        newColumn.save().then(createdColumn => {
             res.send(createdColumn);
         });
     });
 });
 
-// Updates a column
+// Renames a column
 router.put('/:id', authMiddleware.authenticate, (req, res) => {
     Column.findOneAndUpdate(
         {_id: req.params.id, _userId: req.user_id},
@@ -67,7 +67,7 @@ router.put('/:id/moveColumn', authMiddleware.authenticate, (req, res) => {
 
 // Deletes a column
 router.delete('/:id', authMiddleware.authenticate, (req, res) => {
-    Column.findOneAndRemove({_id: req.params.id, _userId: req.user_id}).then((removedColumn) => {
+    Column.findOneAndRemove({_id: req.params.id, _userId: req.user_id}).then(removedColumn => {
         deleteAllTasksFromColumn(removedColumn._id);
         Column.updateMany(
             {_userId: req.user_id, position: { $gt: removedColumn.position }},
@@ -79,7 +79,7 @@ router.delete('/:id', authMiddleware.authenticate, (req, res) => {
 });
 
 // Helper method to delete all tasks in a column
-let deleteAllTasksFromColumn = (_columnId) => {
+let deleteAllTasksFromColumn = _columnId => {
     Task.deleteMany({_columnId});
 }
 
