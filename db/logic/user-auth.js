@@ -50,13 +50,12 @@ module.exports = function(UserSchema) {
 
     // Creates a session
     UserSchema.methods.createSession = function() {
-        let user = this;
-        return user.createRefreshToken().then((refreshToken) => {
+        const user = this;
+        return user.createRefreshToken().then(refreshToken => {
             return saveSession(user, refreshToken);
-        }).then((refreshToken) => {
-            // Saved the refresh token to the database successfully
+        }).then(refreshToken => {
             return refreshToken;
-        }).catch((e) => {
+        }).catch(e => {
             return Promise.reject('API:db:login:user-auth.js:createSession - Failed to save session to the database.\n' + e);
         });
     }
@@ -83,8 +82,8 @@ module.exports = function(UserSchema) {
 
     // Finds a user by its email and password
     UserSchema.statics.findByCredentials = function(email, password) {
-        let User = this;
-        return User.findOne({email}).then((user) => {
+        const User = this;
+        return User.findOne({email}).then(user => {
             // If the email does not exist in the database
             if (!user) {
                 return Promise.reject();
@@ -149,7 +148,7 @@ module.exports = function(UserSchema) {
     // Saving the session (refresh token + expiry time) to the database
     let saveSession = (user, refreshToken) => {
         return new Promise((resolve, reject) => {
-            let expiresAt = createRefreshTokenExpiryTime();
+            const expiresAt = createRefreshTokenExpiryTime();
 
             // Pushes the object into the sessions array
             user.sessions.push({refreshToken, expiresAt});
@@ -157,7 +156,7 @@ module.exports = function(UserSchema) {
             // Saving to the database
             user.save().then(() => {
                 return resolve(refreshToken);
-            }).catch((e) => {
+            }).catch(e => {
                 reject(e);
             });
         });
@@ -165,8 +164,8 @@ module.exports = function(UserSchema) {
 
     // Creates a UNIX timestamp for the expiry date of the refresh token
     let createRefreshTokenExpiryTime = () => {
-        const daysUntilExpire = "10"; 
-        const secondsUntilExpire = ((daysUntilExpire * 24) * 60) * 60;
-        return ((Date.now() / 1000) + secondsUntilExpire);
+        const daysUntilExpire = 5; 
+        const secondsUntilExpire = daysUntilExpire * 24 * 60 * 60;
+        return Date.now() / 1000 + secondsUntilExpire;
     }
 }

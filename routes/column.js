@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { Column, Task, User } = require('../db/models/index');
+const { Column, Task } = require('../db/models/index');
 
 const authMiddleware = require('../middleware/auth-middleware');
 
