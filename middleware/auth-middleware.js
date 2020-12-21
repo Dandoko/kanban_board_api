@@ -7,7 +7,7 @@ let authenticate = (req, res, next) => {
     let accessToken = req.header('x-access-token');
     
     // Verifying the JWT
-    jwt.verify(accessToken, User.getJWTSecret(), (err, decoded) => {
+    jwt.verify(accessToken, User.getJWTSecretKey(), (err, decoded) => {
         // Invalid access key
         if (err) {
             res.status(401).send(err);
@@ -21,12 +21,11 @@ let authenticate = (req, res, next) => {
 }
 
 // Verifies the session
-// Not using "app.use" because we don't want to apply it to all requests but to specific requests
 let verifySession = (req, res, next) => {
     let refreshToken = req.header('x-refresh-token');
     let _id = req.header('_id');
 
-    User.findByIdAndToken(_id, refreshToken).then((user) => {
+    User.findByIdAndToken(_id, refreshToken).then(user => {
         if (!user) {
             return Promise.reject({
                 'API:middleware:verify-session-middleware': 'User not found - Make sure the refresh token and user id are valid'
@@ -40,7 +39,7 @@ let verifySession = (req, res, next) => {
 
         // Checking if the refresh token is valid (not expired)
         let isSessionValid = false;
-        user.sessions.forEach((session) => {
+        user.sessions.forEach(session => {
             if (session.refreshToken === refreshToken) {
                 // If the session has not expired
                 if (User.isRefreshTokenExpired(session.expiresAt) === false) {
@@ -57,7 +56,7 @@ let verifySession = (req, res, next) => {
                 'API:middleware:verify-session-middleware': 'Refresh token has expired or the session is invalid'
             });
         }
-    }).catch((e) => {
+    }).catch(e => {
         res.status(401).send(e);
     });
 };

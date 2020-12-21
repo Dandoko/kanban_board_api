@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
 
 // JWT Secret Key
-const jwtSecret = "Q3KZWdnaP3lGZnZoHIflKXg6q5EqnDTQpwP8K58XJUIk6K9TAV";
+const jwtSecretKey = "Q3KZWdnaP3lGZnZoHIflKXg6q5EqnDTQpwP8K58XJUIk6K9TAV";
 
 module.exports = function(UserSchema) {
     //=============================================================================
@@ -67,8 +67,8 @@ module.exports = function(UserSchema) {
     //=============================================================================
 
     // Gets the JWT secret key
-    UserSchema.statics.getJWTSecret = () => {
-        return jwtSecret;
+    UserSchema.statics.getJWTSecretKey = () => {
+        return jwtSecretKey;
     }
 
     // Finds a user by an ID and the refresh token
@@ -102,11 +102,11 @@ module.exports = function(UserSchema) {
     }
 
     // Checks if the refresh token has expired
-    UserSchema.statics.isRefreshTokenExpired = (expiresAt) => {
-        let secondsSinceEpoch = Date.now() / 1000;
+    UserSchema.statics.isRefreshTokenExpired = expiresAt => {
+        let epochInSeconds = Date.now() / 1000;
         
         // Unexpired
-        if (expiresAt > secondsSinceEpoch) return false;
+        if (expiresAt > epochInSeconds) return false;
         // Expired
         else return true;
     }
