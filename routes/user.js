@@ -10,7 +10,6 @@ const authMiddleware = require('../middleware/auth-middleware');
 // Sign up
 router.post('/', (req, res) => {
     const body = req.body;
-
     const newUser = new User(body);
     newUser.save().then(() => {
         return newUser.createSession();

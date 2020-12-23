@@ -25,10 +25,10 @@ module.exports = function(UserSchema) {
 
     // Creating the access token
     UserSchema.methods.createAccessToken = function() {
-        const user = this;
+        let user = this;
         return new Promise((resolve, reject) => {
             // Creating JWT
-            jwt.sign({_id: user._id.toHexString()}, jwtSecret, {expiresIn: '30m'}, (err, accessToken) => {
+            jwt.sign({_id: user._id.toHexString()}, jwtSecretKey, {expiresIn: '30m'}, (err, accessToken) => {
                 if (!err) resolve(accessToken);
                 else reject();
             });

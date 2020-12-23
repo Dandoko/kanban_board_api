@@ -16,7 +16,7 @@ router.get('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
 
 // Creating a new task in a specified column
 router.post('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
-    hasAccessToColumn(req).then((canCreateTask) => {
+    hasAccessToColumn(req).then(canCreateTask => {
         if (canCreateTask) {
             Task.countDocuments({_columnId: req.params.columnId}).then(numTasks => {
                 let newTask = new Task({
@@ -38,7 +38,7 @@ router.post('/:columnId/tasks', authMiddleware.authenticate, (req, res) => {
 
 // Updating a specified task
 router.put('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) => {
-    hasAccessToColumn(req).then((canUpdateTask) => {
+    hasAccessToColumn(req).then(canUpdateTask => {
         if (canUpdateTask) {
             Task.findOneAndUpdate(
                 {_id: req.params.taskId, _columnId: req.params.columnId},
@@ -55,7 +55,7 @@ router.put('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) =
 
 // Moving a task
 router.put('/:columnId/tasks/:taskId/moveTask', authMiddleware.authenticate, (req, res) => {
-    hasAccessToColumn(req).then((canUpdateTask) => {
+    hasAccessToColumn(req).then(canUpdateTask => {
         if (canUpdateTask) {
             // Decreasing the position of the tasks in the previous column that are greater than the task-to-move
             Task.updateMany(
@@ -85,11 +85,11 @@ router.put('/:columnId/tasks/:taskId/moveTask', authMiddleware.authenticate, (re
 
 // Deleting a specified task
 router.delete('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res) => {
-    hasAccessToColumn(req).then((canDeleteTask) => {
+    hasAccessToColumn(req).then(canDeleteTask => {
         if (canDeleteTask) {
             Task.findOneAndRemove(
                 {_id: req.params.taskId, _columnId: req.params.columnId}
-            ).then((removedTask) => {
+            ).then(removedTask => {
                 Task.updateMany(
                     {_columnId: req.params.columnId, position: { $gt: removedTask.position }},
                     {$inc: {position: -1}}
@@ -105,11 +105,11 @@ router.delete('/:columnId/tasks/:taskId', authMiddleware.authenticate, (req, res
 });
 
 // Checking if the user has access to the columnId passed in the request
-let hasAccessToColumn = (req) => {
+let hasAccessToColumn = req => {
     return Column.findOne({
         _id: req.params.columnId,
         _userId: req.user_id
-    }).then((column) => {
+    }).then(column => {
         if (column) return true;
         else return false;
     });
