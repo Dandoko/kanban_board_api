@@ -20,6 +20,6 @@ authentication process and allows for CRUD operations on tasks and columns.
 
 ## Technologies
 
-- **NodeJS**
-- **ExpressJS**
-- **MongoDB and Mongoose**
+- **NodeJS 12.14.1**
+- **ExpressJS 4.17.1**
+- **MongoDB 4.4.1 and Mongoose 5.10.18**
