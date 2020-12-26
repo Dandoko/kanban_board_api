@@ -28,7 +28,7 @@ module.exports = function(UserSchema) {
         let user = this;
         return new Promise((resolve, reject) => {
             // Creating JWT
-            jwt.sign({_id: user._id.toHexString()}, jwtSecretKey, {expiresIn: '30m'}, (err, accessToken) => {
+            jwt.sign({ _id: user._id.toHexString() }, jwtSecretKey, { expiresIn: '30m' }, (err, accessToken) => {
                 if (!err) resolve(accessToken);
                 else reject();
             });
@@ -37,12 +37,15 @@ module.exports = function(UserSchema) {
 
     // Creating the refresh token
     UserSchema.methods.createRefreshToken = function() {
-        // Generating a random 64byte string using the crypto library
+        // Generating a random 64-byte string using the Crypto library
         return new Promise((resolve, reject) => {
             crypto.randomBytes(64, (err, buffer) => {
                 if (!err) {
                     let refreshToken = buffer.toString('hex');
                     return resolve(refreshToken);
+                }
+                else {
+                    reject();
                 }
             });
         });
@@ -83,7 +86,7 @@ module.exports = function(UserSchema) {
     // Finds a user by its email and password
     UserSchema.statics.findByCredentials = function(email, password) {
         const User = this;
-        return User.findOne({email}).then(user => {
+        return User.findOne({ email }).then(user => {
             // If the email does not exist in the database
             if (!user) {
                 return Promise.reject();
@@ -145,13 +148,13 @@ module.exports = function(UserSchema) {
     //=============================================================================
     //=============================================================================
 
-    // Saving the session (refresh token + expiry time) to the database
+    // Saving the session to the database
     let saveSession = (user, refreshToken) => {
         return new Promise((resolve, reject) => {
             const expiresAt = createRefreshTokenExpiryTime();
 
             // Pushes the object into the sessions array
-            user.sessions.push({refreshToken, expiresAt});
+            user.sessions.push({ refreshToken, expiresAt });
 
             // Saving to the database
             user.save().then(() => {
